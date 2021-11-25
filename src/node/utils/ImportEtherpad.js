@@ -33,8 +33,6 @@ exports.setPadRaw = async (padId, r) => {
     supportedElems.add(element);
   });
 
-  const unsupportedElements = new Set();
-
   // DB key prefixes for pad records. Each key is expected to have the form `${prefix}:${padId}` or
   // `${prefix}:${padId}:${otherstuff}`.
   const padKeyPrefixes = [
@@ -79,8 +77,13 @@ exports.setPadRaw = async (padId, r) => {
     } else if (padKeyPrefixes.includes(prefix)) {
       checkOriginalPadId(id);
       if (prefix === 'pad' && keyParts.length === 2 && value.pool) {
+        const unsupportedElements = new Set();
         for (const [k] of Object.values(value.pool.numToAttrib)) {
           if (!supportedElems.has(k)) unsupportedElements.add(k);
+        }
+        if (unsupportedElements.size) {
+          logger.warn(`(pad ${padId}) unsupported attributes (try installing a plugin): ` +
+                      `${[...unsupportedElements].join(', ')}`);
         }
       }
       keyParts[1] = padId;
@@ -91,11 +94,6 @@ exports.setPadRaw = async (padId, r) => {
     }
     dbRecords.push([key, value]);
   })));
-
-  if (unsupportedElements.size) {
-    logger.warn('Ignoring unsupported elements (you might want to install a plugin): ' +
-                `${[...unsupportedElements].join(', ')}`);
-  }
 
   await Promise.all([
     ...dbRecords.map(([k, v]) => q.pushAsync(() => db.set(k, v))),
