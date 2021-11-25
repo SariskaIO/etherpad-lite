@@ -1,3 +1,9 @@
+# 1.8.16
+
+### Notable enhancements and fixes
+
+* Fixed several `.etherpad` import bugs.
+
 # 1.8.15
 
 ### Security fixes
