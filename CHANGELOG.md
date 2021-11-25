@@ -1,5 +1,10 @@
 # 1.8.16
 
+### Security fixes
+
+* Maliciously crafted `.etherpad` files can no longer overwrite arbitrary
+  database records when imported.
+
 ### Notable enhancements and fixes
 
 * Fixed several `.etherpad` import bugs.
