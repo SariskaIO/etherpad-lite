@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+const async = require('async');
 const authorManager = require('../db/AuthorManager');
 const db = require('../db/DB');
 const hooks = require('../../static/js/pluginfw/hooks');
@@ -47,12 +48,16 @@ exports.setPadRaw = async (padId, r) => {
     if (originalPadId !== padId) throw new Error('unexpected pad ID in record');
   };
 
+  // Limit the number of in-flight database queries so that the queries do not time out when
+  // importing really large files.
+  const q = async.queue(async (task) => await task(), 100);
+
   // First validate and transform values. Do not commit any records to the database yet in case
   // there is a problem with the data.
 
   const dbRecords = [];
   const existingAuthors = new Set();
-  await Promise.all(Object.entries(records).map(async ([key, value]) => {
+  await Promise.all(Object.entries(records).map(([key, value]) => q.pushAsync(async () => {
     if (!value) {
       return;
     }
@@ -85,7 +90,7 @@ exports.setPadRaw = async (padId, r) => {
       return;
     }
     dbRecords.push([key, value]);
-  }));
+  })));
 
   if (unsupportedElements.size) {
     logger.warn('Ignoring unsupported elements (you might want to install a plugin): ' +
@@ -93,7 +98,7 @@ exports.setPadRaw = async (padId, r) => {
   }
 
   await Promise.all([
-    ...dbRecords.map(async ([k, v]) => await db.set(k, v)),
-    ...[...existingAuthors].map(async (authorId) => await authorManager.addPad(authorId, padId)),
+    ...dbRecords.map(([k, v]) => q.pushAsync(() => db.set(k, v))),
+    ...[...existingAuthors].map((a) => q.pushAsync(() => authorManager.addPad(a, padId))),
   ]);
 };

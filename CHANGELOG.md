@@ -8,6 +8,7 @@
 ### Notable enhancements and fixes
 
 * Fixed several `.etherpad` import bugs.
+* Improved support for large `.etherpad` imports.
 
 # 1.8.15
 
