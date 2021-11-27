@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+const {Pad} = require('../db/Pad');
 const async = require('async');
 const authorManager = require('../db/AuthorManager');
 const db = require('../db/DB');
@@ -53,7 +54,7 @@ exports.setPadRaw = async (padId, r) => {
   // First validate and transform values. Do not commit any records to the database yet in case
   // there is a problem with the data.
 
-  const dbRecords = [];
+  const dbRecords = new Map();
   const existingAuthors = new Set();
   await Promise.all(Object.entries(records).map(([key, value]) => q.pushAsync(async () => {
     if (!value) {
@@ -92,11 +93,24 @@ exports.setPadRaw = async (padId, r) => {
       logger.warn(`(pad ${padId}) Ignoring record with unsupported key: ${key}`);
       return;
     }
-    dbRecords.push([key, value]);
+    dbRecords.set(key, value);
   })));
 
+  new Pad(padId, {
+    // Only fetchers are needed to check the pad's integrity.
+    get: async (k) => dbRecords.get(k),
+    getSub: async (k, sub) => {
+      let v = this.get(k);
+      for (const sk of sub) {
+        if (v == null) return null;
+        v = v[sk];
+      }
+      return v;
+    },
+  }).check();
+
   await Promise.all([
-    ...dbRecords.map(([k, v]) => q.pushAsync(() => db.set(k, v))),
+    ...[...dbRecords].map(([k, v]) => q.pushAsync(() => db.set(k, v))),
     ...[...existingAuthors].map((a) => q.pushAsync(() => authorManager.addPad(a, padId))),
   ]);
 };
