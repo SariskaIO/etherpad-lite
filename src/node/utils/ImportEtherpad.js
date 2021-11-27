@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+const AttributePool = require('../../static/js/AttributePool');
 const {Pad} = require('../db/Pad');
 const async = require('async');
 const authorManager = require('../db/AuthorManager');
@@ -77,11 +78,12 @@ exports.setPadRaw = async (padId, r) => {
       value.padIDs = {[padId]: 1};
     } else if (padKeyPrefixes.includes(prefix)) {
       checkOriginalPadId(id);
-      if (prefix === 'pad' && keyParts.length === 2 && value.pool) {
+      if (prefix === 'pad' && keyParts.length === 2) {
+        const pool = new AttributePool().fromJsonable(value.pool);
         const unsupportedElements = new Set();
-        for (const [k] of Object.values(value.pool.numToAttrib)) {
+        pool.eachAttrib((k, v) => {
           if (!supportedElems.has(k)) unsupportedElements.add(k);
-        }
+        });
         if (unsupportedElements.size) {
           logger.warn(`(pad ${padId}) unsupported attributes (try installing a plugin): ` +
                       `${[...unsupportedElements].join(', ')}`);
