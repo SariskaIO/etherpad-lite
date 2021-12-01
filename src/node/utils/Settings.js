@@ -148,12 +148,11 @@ exports.dbSettings = {filename: path.join(exports.root, 'var/dirty.db')};
  * The default Text of a new pad
  */
 exports.defaultPadText = [
-  'Welcome to Etherpad!',
+  'Welcome to Sariska Collaborative Sharing Documment!',
   '',
   'This pad text is synchronized as you type, so that everyone viewing this page sees the same ' +
       'text. This allows you to collaborate seamlessly on documents!',
   '',
-  'Etherpad on Github: https://github.com/ether/etherpad-lite',
 ].join('\n');
 
 /**

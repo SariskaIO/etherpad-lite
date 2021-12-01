@@ -117,7 +117,7 @@ Example returns:
 {
     "code" : 0,
     "message" : "ok",
-    "data" : "Z:1>6b|5+6b$Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http://etherpad.org\n"
+    "data" : "Z:1>6b|5+6b$Welcome to Sariska Collaborative Sharing Documment!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http://etherpad.org\n"
 }
 
 */

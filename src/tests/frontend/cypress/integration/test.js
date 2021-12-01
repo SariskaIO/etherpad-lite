@@ -18,6 +18,6 @@ describe(__filename, () => {
         .find('iframe[name="ace_inner"]').iframe()
         .find('.ace-line:first')
         .should('be.visible')
-        .should('have.text', 'Welcome to Etherpad!');
+        .should('have.text', 'Welcome to Sariska Collaborative Sharing Documment!');
   });
 });
