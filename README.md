@@ -183,3 +183,20 @@ Visit the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**.
 
 # License
 [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0.html)
+
+#build docker image
+
+docker build -t 718762496685.dkr.ecr.ap-south-1.amazonaws.com/sariska/etherpad:latest .
+
+
+#push docker image
+docker push 718762496685.dkr.ecr.ap-south-1.amazonaws.com/sariska/etherpad:latest
+
+
+
+
+
+
+
+
+

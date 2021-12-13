@@ -1,3 +1,5 @@
+.PHONY: help
+
 doc_sources = $(wildcard doc/*/*.md) $(wildcard doc/*.md)
 outdoc_files = $(addprefix out/,$(doc_sources:.md=.html))
 
@@ -30,3 +32,24 @@ endif
 
 clean:
 	rm -rf out/
+
+
+
+
+AWS_ACCOUNT_ID = 718762496685
+APP_NAME = etherpad
+REGION = ap-south-1
+NAMESPACE = sariska
+
+
+build-release:
+        docker build -t ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${NAMESPACE}/$(APP_NAME):latest .
+
+
+push-release:
+       docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${NAMESPACE}/$(APP_NAME):latest
+
+
+deploy: build-release push-release
+
+
